@@ -32,7 +32,7 @@ The image is on [Docker Hub](https://hub.docker.com/repository/docker/bentasker1
 
 Or, to run from a copy of this repo
 
-    docker built -t nginx_mitm .
+    docker build -t nginx_mitm .
     docker run -p 8080:80 -e SERVER_NAME=repro.bentasker.co.uk -e DEST=https://www.google.com nginx_mitm
 
 ----
