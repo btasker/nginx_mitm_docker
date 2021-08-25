@@ -31,9 +31,10 @@ http {
 	# Logging Settings
 	##
 
-        log_format  main  '$remote_addr\t-\t$remote_user\t[$time_local]\t"$request"\t'
+        log_format  main  '$remote_addr\t-\t$remote_user\t[$time_local]\t$server_name\t"$request"\t'
                       '$status\t$body_bytes_sent\t"$http_referer"\t'
-                      '"$http_user_agent"\t"$http_x_forwarded_for"\t"$http_host"\tCACHE_$upstream_cache_status\t';
+                      '"$http_user_agent"\t"$http_x_forwarded_for"\t$request_time\t"$http_host"\tForwarded to:\t$upstream_addr\t'
+                      '\t$upstream_bytes_received\t"$upstream_http_server"\t$upstream_connect_time\t$upstream_status\t$upstream_response_time\t';
 
 
 	access_log /var/log/nginx/access.log main;
