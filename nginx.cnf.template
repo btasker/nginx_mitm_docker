@@ -27,6 +27,8 @@ http {
 	default_type application/octet-stream;
 
 
+	resolver ${DNS_RESOLVER};
+
 	##
 	# Logging Settings
 	##
@@ -66,7 +68,7 @@ http {
 
 	# This is the default config, controlled by the ENV var DEST
     server {
-            listen   80;
+            listen   80 default_server;
 
             root /usr/share/nginx/empty;
             index index.php index.html index.htm;
