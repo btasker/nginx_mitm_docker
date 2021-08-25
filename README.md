@@ -14,6 +14,8 @@ This implies some control over the client, as you'll need to be able to do at le
 
 If you have the ability to install a root certificate on the client or find that it doesn't validate cert chains, then you can also perform a HTTPS-to-plain attack (see Advanced usage for an example)
 
+IMPORTANT: *The default behaviour is to run an open proxy*
+
 
 ----
 
@@ -23,7 +25,7 @@ If you have the ability to install a root certificate on the client or find that
 
 The image is on [Docker Hub](https://hub.docker.com/repository/docker/bentasker12/nginx_simple_mitm) so you can run
 
-    docker run -p 8080:80 -e SERVER_NAME=repro.bentasker.co.uk -e DEST=https://www.google.com bentasker12/nginx_simple_mitm:initial
+    docker run -p 8080:80 -e SERVER_NAME=repro.bentasker.co.uk -e DEST=https://www.google.com bentasker12/nginx_simple_mitm
 
 
 ### Locally
@@ -72,7 +74,7 @@ In the examples given, port 80 is published to 8080 on the host: `-p 8080:80`
 
 ### Using a custom server name and forwarding to Google:
 
-    docker run -p 8080:80 -e SERVER_NAME=repro.bentasker.co.uk -e DEST=https://www.google.com bentasker12/nginx_simple_mitm:initial
+    docker run -p 8080:80 -e SERVER_NAME=repro.bentasker.co.uk -e DEST=https://www.google.com bentasker12/nginx_simple_mitm
     curl http://127.0.0.1:8080 -H "Host: repro.bentasker.co.uk"
 
 Giving log-line:
@@ -82,16 +84,16 @@ Giving log-line:
 
 ### Accepting anything and forwarding to Google
 
-    docker run -p 8080:80 -e DEST=https://www.google.com bentasker12/nginx_simple_mitm:initial
+    docker run -p 8080:80 -e DEST=https://www.google.com bentasker12/nginx_simple_mitm
 
 
 ### Using as a wildcard proxy
 
-The default config is considered, well, default - so it's possible to have it accept *any* HTTP connection and then forward it onto the same upstream.
+This is the default configuration, this section exists simply to explain how it works
 
 To do this, we pass an Nginx variable in the `DEST` env var:
 
-    docker run -p 8080:80 -e DEST='https://$http_host' bentasker12/nginx_simple_mitm:initial
+    docker run -p 8080:80 -e DEST='https://$http_host' bentasker12/nginx_simple_mitm
 
 Any HTTP request will then be proxied onto it's destination:
 
@@ -114,7 +116,7 @@ The default config stands up a single server block on port 80.
 
 You _might_ want to be able to do more than this though. The Nginx configuration is set up to pull in any files ending in `.conf` within `/etc/nginx/conf.d` so you can tell Docker to export this directory from your local filesystem
 
-    docker run -v /full/path/to/dir:/etc/nginx/conf.d -p 8080:80 bentasker12/nginx_simple_mitm:initial
+    docker run -v /full/path/to/dir:/etc/nginx/conf.d -p 8080:80 bentasker12/nginx_simple_mitm
 
 Note: there *must* be at least 1 `.conf` file present, even if it's empty, otherwise some versions of Nginx will fail to start.
 
@@ -155,7 +157,7 @@ Where your exported directory also contains `mycert.crt` and `mycert.key` (assum
 
 Traffic could then be captured as follows
 
-    docker run --name=nginx_mitm -v /home/ben/tmp/nginxconfs:/etc/nginx/conf.d -v /home/ben/tmp/pcaps:/root/pcaps bentasker12/nginx_simple_mitm:initial
+    docker run --name=nginx_mitm -v /home/ben/tmp/nginxconfs:/etc/nginx/conf.d -v /home/ben/tmp/pcaps:/root/pcaps bentasker12/nginx_simple_mitm
     docker exec -it nginx_mitm tcpdump -i lo -s0 -w /root/pcaps/cap.pcap -v port 9080
 
 (In our example config, the plaintext version of the traffic is sent to port 9080 on loopback, so that's what we filter for)
@@ -167,7 +169,7 @@ It's alluded to in the example above, but `tcpdump` is installed in the containe
 
 For convenience, a directory `/root/pcaps` is also created, so that you can map a local directory to it:
 
-    docker run --name=nginx_mitm -v /home/ben/tmp/nginxconfs:/etc/nginx/conf.d -v /home/ben/tmp/pcaps:/root/pcaps bentasker12/nginx_simple_mitm:initial
+    docker run --name=nginx_mitm -v /home/ben/tmp/nginxconfs:/etc/nginx/conf.d -v /home/ben/tmp/pcaps:/root/pcaps bentasker12/nginx_simple_mitm
 
 You can then exec `tcpdump`:
 
