@@ -1,7 +1,7 @@
 FROM nginx:1.21.1-alpine
 
 ENV SERVER_NAME=_
-ENV DEST=https://snippets.bentasker.co.uk
+ENV DEST=https://\$http_host
 ENV DNS_RESOLVER=8.8.8.8
 
 # Some versions of Nginx will crash out if there isn't at least one file matching an include glob
